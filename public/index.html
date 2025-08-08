@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SixtyFour AI API Tester</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 SixtyFour AI API Tester</h1>
+            <p>Test all SixtyFour AI enrichment endpoints with a simple interface</p>
+            <div id="health-status" class="health-status">
+                <span id="health-indicator">●</span>
+                <span id="health-text">Checking connection...</span>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab(event, 'enrich-company')">Enrich Company</button>
+            <button class="tab-button" onclick="openTab(event, 'enrich-lead')">Enrich Lead</button>
+            <button class="tab-button" onclick="openTab(event, 'find-email')">Find Email</button>
+            <button class="tab-button" onclick="openTab(event, 'find-phone')">Find Phone</button>
+            <button class="tab-button" onclick="openTab(event, 'qa-agent')">QA Agent</button>
+            <button class="tab-button" onclick="openTab(event, 'async-jobs')">Async Jobs</button>
+        </div>
+
+        <!-- Enrich Company Tab -->
+        <div id="enrich-company" class="tab-content active">
+            <h2>Enrich Company Data</h2>
+            <form id="enrich-company-form" class="api-form">
+                <div class="form-section">
+                    <h3>Target Company</h3>
+                    <div class="form-group">
+                        <label for="company-name">Company Name *</label>
+                        <input type="text" id="company-name" required placeholder="e.g., Acme Inc">
+                    </div>
+                    <div class="form-group">
+                        <label for="company-address">Address</label>
+                        <input type="text" id="company-address" placeholder="e.g., 123 Main St, New York, NY 10001">
+                    </div>
+                    <div class="form-group">
+                        <label for="company-phone">Phone Number</label>
+                        <input type="text" id="company-phone" placeholder="e.g., +1-555-123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label for="company-website">Website</label>
+                        <input type="url" id="company-website" placeholder="e.g., https://acme-inc.com">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Enrichment Options</h3>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="find-people" checked>
+                            Find People Associated with Company
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="people-focus">People Focus Prompt</label>
+                        <textarea id="people-focus" placeholder="e.g., Find the CEO and marketing manager">Find me the owners of the company and the office manager</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="research-plan">Research Plan</label>
+                        <textarea id="research-plan" placeholder="e.g., Check their website, social media, and LinkedIn profiles">Check their website, online profiles, and linkedin for the people. Looking for the individual portfolios of the employees can help too</textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="custom-fields-container">
+                        <div class="custom-fields-header">
+                            <h4>Custom Fields to Extract</h4>
+                            <button type="button" onclick="addCustomField()" class="add-field-btn">Add Field</button>
+                        </div>
+                        <div class="field-labels">
+                            <span>Field Name</span>
+                            <span>Description</span>
+                            <span>Action</span>
+                        </div>
+                        <div id="custom-fields">
+                            <!-- Custom fields will be added here dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Enrich Company (Sync)</button>
+                    <button type="button" onclick="enrichCompanyAsync()" class="btn-secondary">Enrich Company (Async)</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Enrich Lead Tab -->
+        <div id="enrich-lead" class="tab-content">
+            <h2>Enrich Lead Data</h2>
+            <form id="enrich-lead-form" class="api-form">
+                <div class="form-section">
+                    <h3>Lead Information</h3>
+                    <div class="form-group">
+                        <label for="lead-name">Full Name *</label>
+                        <input type="text" id="lead-name" required placeholder="e.g., John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="lead-email">Email</label>
+                        <input type="email" id="lead-email" placeholder="e.g., john.doe@acme-inc.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="lead-linkedin">LinkedIn URL</label>
+                        <input type="url" id="lead-linkedin" placeholder="e.g., https://www.linkedin.com/in/johndoe">
+                    </div>
+                    <div class="form-group">
+                        <label for="lead-company">Company</label>
+                        <input type="text" id="lead-company" placeholder="e.g., Acme Inc">
+                    </div>
+                    <div class="form-group">
+                        <label for="lead-title">Job Title</label>
+                        <input type="text" id="lead-title" placeholder="e.g., Marketing Manager">
+                    </div>
+                    <div class="form-group">
+                        <label for="lead-location">Location</label>
+                        <input type="text" id="lead-location" placeholder="e.g., New York, NY">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Enrich Lead</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Find Email Tab -->
+        <div id="find-email" class="tab-content">
+            <h2>Find Email Address</h2>
+            <form id="find-email-form" class="api-form">
+                <div class="form-section">
+                    <h3>Person Information</h3>
+                    <div class="form-group">
+                        <label for="email-person-name">Full Name *</label>
+                        <input type="text" id="email-person-name" required placeholder="e.g., Jane Smith">
+                    </div>
+                    <div class="form-group">
+                        <label for="email-company-name">Company Name *</label>
+                        <input type="text" id="email-company-name" required placeholder="e.g., Acme Inc">
+                    </div>
+                    <div class="form-group">
+                        <label for="email-person-title">Job Title</label>
+                        <input type="text" id="email-person-title" placeholder="e.g., Marketing Manager">
+                    </div>
+                    <div class="form-group">
+                        <label for="email-domain">Domain (Optional)</label>
+                        <input type="text" id="email-domain" placeholder="e.g., acme-inc.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="email-linkedin">LinkedIn URL</label>
+                        <input type="url" id="email-linkedin" placeholder="e.g., https://www.linkedin.com/in/janesmith">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Search Options</h3>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="email-bruteforce" checked>
+                            Enable Bruteforce Search (more thorough)
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="email-company-only">
+                            Only Company Emails (exclude personal emails)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Find Email</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Find Phone Tab -->
+        <div id="find-phone" class="tab-content">
+            <h2>Find Phone Number</h2>
+            <form id="find-phone-form" class="api-form">
+                <div class="form-section">
+                    <h3>Person Information</h3>
+                    <div class="form-group">
+                        <label for="phone-person-name">Full Name *</label>
+                        <input type="text" id="phone-person-name" required placeholder="e.g., Jane Smith">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone-company-name">Company Name</label>
+                        <input type="text" id="phone-company-name" placeholder="e.g., Acme Inc">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone-location">Location</label>
+                        <input type="text" id="phone-location" placeholder="e.g., New York, NY">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Find Phone</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- QA Agent Tab -->
+        <div id="qa-agent" class="tab-content">
+            <h2>QA Agent</h2>
+            <form id="qa-agent-form" class="api-form">
+                <div class="form-section">
+                    <h3>Question & Context</h3>
+                    <div class="form-group">
+                        <label for="qa-question">Question *</label>
+                        <textarea id="qa-question" required placeholder="e.g., What is Acme Inc's main business focus?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="qa-context">Context</label>
+                        <textarea id="qa-context" placeholder="Provide any relevant context or data"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Ask Question</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Async Jobs Tab -->
+        <div id="async-jobs" class="tab-content">
+            <h2>Async Job Management</h2>
+            <div class="form-section">
+                <h3>Check Job Status</h3>
+                <div class="form-group">
+                    <label for="task-id">Task ID</label>
+                                            <input type="text" id="task-id" placeholder="e.g., abc12345-def6-7890-ghij-klmnopqrstuv">
+                </div>
+                <button type="button" onclick="checkJobStatus()" class="btn-primary">Check Status</button>
+            </div>
+            
+            <div id="active-jobs" class="active-jobs">
+                <h3>Active Jobs</h3>
+                <div id="jobs-list">
+                    <p class="no-jobs">No active jobs</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section">
+            <div class="results-header">
+                <h3>Results</h3>
+                <div class="results-actions">
+                    <button onclick="clearResults()" class="btn-clear">Clear</button>
+                    <button onclick="copyResults()" class="btn-copy">Copy JSON</button>
+                </div>
+            </div>
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <span>Processing request...</span>
+            </div>
+            <pre id="results" class="results-container">No results yet. Submit a form above to see API responses.</pre>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
